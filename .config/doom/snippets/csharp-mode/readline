@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# contributor : Chachi
+# name: Console.ReadLine(...);
+# key: crl
+# --
+Console.ReadLine()$1

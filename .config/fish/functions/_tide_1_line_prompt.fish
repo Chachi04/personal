@@ -1,0 +1,1 @@
+/home/chachi/.config/fish/themes/tide/_tide_1_line_prompt.fish

@@ -1,0 +1,365 @@
+#+TITLE: My Doom Emacs Config
+#+AUTHOR: Jiaqi Wang
+#+PROPERTY: header-args :tangle config.el
+
+* TABLE OF CONTENTS :toc:
+- [[#about-this-config][ABOUT THIS CONFIG]]
+- [[#macros][MACROS]]
+- [[#personal-information][Personal Information]]
+- [[#fonts][FONTS]]
+- [[#appearance][APPEARANCE]]
+  - [[#theme][Theme]]
+  - [[#transparency][Transparency]]
+  - [[#relative-linenumbers][Relative linenumbers]]
+  - [[#treemacs][TREEMACS]]
+- [[#org-mode][ORG MODE]]
+- [[#ligatures][Ligatures]]
+- [[#vim-escape][Vim Escape]]
+- [[#lines][LINES]]
+- [[#substitution][SUBSTITUTION]]
+- [[#cursor][CURSOR]]
+- [[#lsp-ignores][LSP IGNORES]]
+- [[#input-methods][INPUT METHODS]]
+- [[#pointer-incrementdecrement][Pointer increment/decrement]]
+- [[#treesitter][Treesitter]]
+- [[#doom-configuration][Doom configuration]]
+  - [[#better-defautls][Better defautls]]
+
+* ABOUT THIS CONFIG
+This is my personal configuration. There is no need to run 'doom sync' after modifying this file.
+
+* MACROS
+Here are some additional functions/macros that could help configure Doom:
++ `load!' for loading external *.el files relative to this one
++ `use-package!' for configuring packages
++ `after!' for running code after a package has loaded
++ `add-load-path!' for adding directories to the `load-path', relative to this file. Emacs searches the `load-path' when you load packages with
++ `require' or `use-package'.
++ `map!' for binding new keys
+
+* Personal Information
+Some functionality uses this to identify you, e.g. GPG configuration, email clients, file templates and snippets.
+#+begin_src emacs-lisp
+(setq user-full-name "Jiaqi Wang"
+      user-mail-address "w.jiaqi004@gmail.com")
+#+end_src
+
+* FONTS
+Settings related to fonts. Doom exposes five (optional) variables for controlling fonts.
++ 'doom-font' - standard monospace font that is used for most things in Emacs.
++ 'doom-variable-pitch-font' - variable font which is useful in some Emacs plugins.
++ 'doom-big-font' - used in doom-big-font-mode; useful for presentations.
++ 'font-lock-comment-face' - for comments.
++ 'font-lock-keyword-face' - for keywords with special significance like 'setq' in elisp.
++ 'gloaal-prerigy-symbols-mode' - change certain keywords to symbols, such as lambda
+They all accept either a font-spec, font string ("Input Mono-12"), or xlfd font string.
+#+begin_src emacs-lisp
+(setq doom-font (font-spec :family "FiraCode Nerd Font Mono" :size 15)
+      doom-variable-pitch-font (font-spec :family "Ubuntu" :size 15)
+      doom-big-font (font-spec :family "FiraCode Nerd Font Mono" :size 24))
+#+end_src
+
+* APPEARANCE
+** Theme
+Setting the theme to doom-palenight. To try out new themes use 'SPC h t'.
+#+begin_src emacs-lisp
+(setq doom-theme 'doom-palenight)
+#+end_src
+
+** Transparency
+Enable transparent background.
+#+begin_src emacs-lisp
+(set-frame-parameter (selected-frame)'alpha '(97 . 97))
+(add-to-list 'default-frame-alist'(alpha . (97 . 97)))
+#+end_src
+
+** Relative linenumbers
+#+begin_src emacs-lisp
+(setq display-line-numbers-type 'relative)
+#+end_src
+
+** TREEMACS
+Setting the theme of treemacs to doom-colors. Change default width.
+#+begin_src emacs-lisp
+(setq doom-themes-treemacs-theme 'doom-colors)
+(setq treemacs-width 25)
+;; (map! :leader
+;;       :desc "Open treemacs" "o p" #'treemacs-display-current-project-exclusively)
+#+end_src
+
+* ORG MODE
+#+begin_src emacs-lisp
+(map! :leader
+      :desc "Org Babel tangle" "m B" #'org-babel-tangle)
+(after! org-superstar
+  (setq org-superstar-headline-bullets-list '("◉" "○" "✸" "✿" "✤" "✜" "◆" "▶")
+        org-superstar-prettify-item-bullets t))
+(after! org
+  ;; (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+  (setq org-directory "~/org/"
+        org-agenda-files '("~/org/agenda.org")
+        org-default-notes-file (expand-file-name "notes.org" org-directory)
+        org-ellipsis " ▼ "
+        org-log-done 'time
+        ;; org-hide-emphasis-markers t
+        ))
+(add-hook 'org-mode-hook 'turn-on-auto-fill)
+;; (add-hook 'org-mode-hook 'centered-window-mode)
+#+end_src
+
+* Ligatures
+#+begin_src emacs-lisp
+;; (customize-set-variable 'fira-code-mode-disabled-ligatures '("[]" "#{" "#(" "#_" "#_(" "x" "::" "<>" "++" "--" "and" "or")) ;; List of ligatures to turn off
+;; (add-hook 'prog-mode-hook (lambda ()
+;;                             (unless (eq major-mode 'web-mode)
+;;                             (fira-code-mode))))
+;; (plist-put! +ligatures-extra-symbols
+;;   org
+;;   :name          "»"
+;;   :src_block     "»"
+;;   :src_block_end "«"
+;;   :quote         "“"
+;;   :quote_end     "”"
+;;   ;; Functional
+;;   :lambda        "λ"
+;;   :def           "ƒ"
+;;   :composition   "∘"
+;;   :map           "↦"
+;;   ;; Types
+;;   :null          "∅"
+;;   :true          "𝕋"
+;;   :false         "𝔽"
+;;   :int           "ℤ"
+;;   :float         "ℝ"
+;;   :str           "𝕊"
+;;   :bool          "𝔹"
+;;   :list          "𝕃"
+;;   ;; Flow
+;;   :not           "￢"
+;;   :in            "∈"
+;;   :not-in        "∉"
+;;   :and           "and"
+;;   :or            "or"
+;;   :for           "∀"
+;;   :some          "∃"
+;;   :return        "⟼"
+;;   :yield         "⟻"
+;;   ;; Other
+;;   :union         "⋃"
+;;   :intersect     "∩"
+;;   :diff          "∖"
+;;   :tuple         "⨂"
+;;   :pipe          "" ;; FIXME: find a non-private char
+;;   :dot           "•"  ;; you could also add your own if you want
+;; )
+#+end_src
+
+
+* Vim Escape
+Use C-c like in vim.
+#+begin_src emacs-lisp
+;; TODO replace C-c prefix with something else so that no functionality is lost
+(map! :map evil-insert-state-map "C-c" 'evil-normal-state)
+(map! :map evil-normal-state-map "C-c" 'evil-normal-state)
+#+end_src
+
+
+* LINES
+Set line numbers to ralative for easy jumps. Set C-/ to toggle comment. Moving line(s) up/down with M-j/M-k
+#+begin_src emacs-lisp
+(map! :desc "Comment or uncomment current line"
+    "C-/" #'comment-line)
+(map! :desc "Drag selected line up"
+      "M-k" #'drag-stuff-up)
+(map! :desc "Drag selected line down"
+      "M-j" #'drag-stuff-down)
+#+end_src
+
+
+* SUBSTITUTION
+Rest s/S's behaviour to substitution
+#+begin_src emacs-lisp
+(remove-hook 'doom-first-input-hook #'evil-snipe-mode)
+#+end_src
+
+
+* CURSOR
+Tired of the cursor going back when exiting insert mode? Worry no more!
+#+begin_src emacs-lisp
+(setq evil-move-cursor-back nil)
+#+end_src
+
+* LSP IGNORES
+#+begin_src emacs-lisp
+(with-eval-after-load 'lsp-mode
+  (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\vendor\\'")
+  (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\node_modules\\'"))
+  ;; (add-to-list 'lsp-file-watch-ignored-files "[/\\\\]\\.my-files\\'"))
+#+end_src
+
+* INPUT METHODS
+Adding Bulgarian Phonetic input method
+#+begin_src emacs-lisp
+(setq default-input-method "bulgarian-phonetic")
+(map! :leader
+      :desc "Toggle input method" "t i" #'toggle-input-method)
+#+end_src
+
+* Pointer increment/decrement
+#+begin_src emacs-lisp
+(map! :leader
+      :desc "Increment at pointer"
+      :map evil-normal-state-map
+      "=" #'evil-numbers/inc-at-pt)
+
+(map! :leader
+      :desc "Decrement at pointer"
+      :map evil-normal-state-map
+      "-" #'evil-numbers/dec-at-pt)
+#+end_src
+
+* Treesitter
+#+begin_src emacs-lisp
+(use-package! tree-sitter
+  :config
+  (require 'tree-sitter-langs)
+  (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+#+end_src
+
+* Doom configuration
+** Better defautls
+This parts follow the configuration found on [https://tecosaur.github.io/emacs-config/config.html]
+
+*** Simple settings
+Unicaode ellipsis are nicer than "...", and also save space.
+Keep some space when scrolling.
+#+begin_src emacs-lisp
+(setq delete-by-moving-to-trash t
+      undo-limit 80000000
+      evil-want-fine-undo t
+      ;; truncate-string-ellipsis "…"
+      scroll-margin 10
+      )
+#+end_src
+
+*** Windows
+#+begin_src emacs-lisp
+(setq evil-vsplit-window-right t
+      evil-split-window-below t)
+(defadvice! prompt-for-buffer (&rest _)
+  :after '(evil-window=split evil-window-vsplit)
+  (consult-buffer))
+(defadvice! prompt-for-buffer (&rest _)
+  :after '(evil-window=split evil-window-split)
+  (consult-buffer))
+#+end_src
+
+*** Company
+#+begin_src emacs-lisp
+(after! company
+  (setq company-idle-delay 0.8
+        company-minimum-prefix-length 2)
+  (add-hook 'evil-normal-state-entry-hook #'company-abort)) ;; make aborting less annoying.
+(setq-default history-length 1000)
+(setq-default prescient-history-length 1000)
+#+end_src
+
+*** Projectile
+#+begin_src emacs-lisp
+(setq projectile-ignored-projects '("~/" "/tmp" "~/.emacs.d" "~/.emacs.d/.local/straight/repos/"))
+(defun projectile-ignored-project-function (filepath)
+  "Return t if FILEPATH is within any of `projectile-ignored-projects'"
+  (or (mapcar (lambda (p) (s-starts-with-p p filepath)) projectile-ignored-projects)))
+#+end_src
+
+*** Aas mode (auto snippets)
+#+begin_src emacs-lisp
+(use-package! aas
+  :commands aas-mode)
+#+end_src
+
+*** Yas
+#+begin_src emacs-lisp
+(setq yas-triggers-in-field t)
+(setq yas--default-user-snippets-dir "~/.config/doom/snippets")
+#+end_src
+
+*** Laravel blades
+#+begin_src emacs-lisp
+;; (setq web-mode-engines-alist
+;;       '(("php"    . "\\\\.phtml\\\\'")
+;;         ("blade"  . "\\\\.blade\\\\.")))
+;; (add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
+;; (add-to-list 'auto-mode-alist '("/\\(views\\|html\\|templates\\)/.*\\.php\\'" . web-mode))
+(setq web-mode-comment-style 2)
+#+end_src
+
+*** Killing emacs
+Don't kill emacs with :q, instead go to doom dashboard.
+#+begin_src emacs-lisp
+;; (defun emacs-smart-quit
+;;     (interactive)
+;;   (if ())
+;;   )
+(evil-ex-define-cmd "q" (lambda () (interactive) (switch-to-buffer "*doom*")))
+(map! :leader
+      :desc "go to dashboard" "g d" (lambda () (interactive) (switch-to-buffer "*doom*")))
+#+end_src
+
+*** Workspaces
+workspace configuration - do not create new workspace for each session
+#+begin_src emacs-lisp
+;; (after! persp-mode
+;;   (setq persp-emacsclient-init-frame-behaviour-override "main"))
+#+end_src
+
+*** Centered window
+#+begin_src emacs-lisp
+(map! :leader
+      :desc "Toggle Center the window" "w c" #'centered-window-mode)
+#+end_src
+
+*** File Templates
+#+begin_src emacs-lisp
+(setq +file-templates-dir "~/.config/doom/templates"
+      max-specpdl-size 10000)
+(set-file-template! "\\.cpp$" :trigger "__cp.cpp" :mode 'c++-mode)
+#+end_src
+
+*** Indentation
+#+begin_src emacs-lisp
+(defun my-c++-mode-hook ()
+  (setq c-basic-offset 2)
+  (c-set-offset 'substatement-open 0))
+(add-hook 'c++-mode-hook 'my-c++-mode-hook)
+#+end_src
+
+*** Cpp compile
+#+begin_src emacs-lisp
+(add-hook 'c++-mode-hook
+    (lambda ()
+    (unless (or (file-exists-p "makefile")
+                (file-exists-p "Makefile"))
+        (set (make-local-variable 'compile-command)
+            (concat "g++ -o run "
+                    (if buffer-file-name
+                        (shell-quote-argument
+                        (buffer-file-name))))))))
+#+end_src
+
+*** Autopairs
+#+begin_src emacs-lisp
+;; (electric-pair-mode 1)
+
+;; (defvar org-electric-pairs '((?\* . ?\*) (?/ . ?/) (?= . ?=)
+;;                             (?\_ . ?\_) (?~ . ?~) (?+ . ?+)) "Electric pairs for org-mode.")
+
+;; (defun org-add-electric-pairs ()
+;;   (setq-local electric-pair-pairs (append electric-pair-pairs org-electric-pairs))
+;;   (setq-local electric-pair-text-pairs electric-pair-pairs))
+
+;; (add-hook 'org-mode-hook 'org-add-electric-pairs)
+#+end_src
+
+#+RESULTS:

@@ -1,0 +1,1 @@
+/home/chachi/.config/fish/plugins/z/conf.d/z.fish

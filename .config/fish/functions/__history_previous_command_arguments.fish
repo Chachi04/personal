@@ -1,0 +1,1 @@
+/home/chachi/.config/fish/plugins/bang-bang/functions/__history_previous_command_arguments.fish

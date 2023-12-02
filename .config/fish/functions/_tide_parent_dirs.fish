@@ -1,0 +1,1 @@
+/home/chachi/.config/fish/themes/tide/_tide_parent_dirs.fish

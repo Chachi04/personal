@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: forr
+# key: forr
+# --
+for (${1:auto} ${2:i} = ${3:n}; $2 > ${4:0}; $2--) {
+    $0
+}

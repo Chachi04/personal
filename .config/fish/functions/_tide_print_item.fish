@@ -1,0 +1,1 @@
+/home/chachi/.config/fish/themes/tide/_tide_print_item.fish
